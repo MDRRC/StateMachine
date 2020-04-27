@@ -4,70 +4,67 @@
 #ifndef _STATEMACHINE_H
 #define _STATEMACHINE_H
 
-class StateMachine {
- public:
-  // Methods
+class StateMachine
+{
+  public:
+    // Methods
+    
+    StateMachine();
+    ~StateMachine();
+    void init();
+    void run();
 
-  StateMachine();
-  ~StateMachine();
-  void init();
-  void run();
-
-  // When a stated is added we pass the function that represents
-  // that state logic
-  State* addState(void (*functionPointer)());
-  State* transitionTo(State* s);
-  int transitionTo(int i);
-
-  // Attributes
-  LinkedList<State*>* stateList;
-  bool executeOnce =
-      true;  // Indicates that a transition to a different state has occurred
-  int currentState = -1;  // Indicates the current state number
-  bool transition = false;
+    // When a stated is added we pass the function that represents 
+    // that state logic
+    State* addState(void (*functionPointer)());
+	State* transitionTo(State* s);
+	int transitionTo(int i);
+	
+    // Attributes
+    LinkedList<State*> *stateList;
+	bool executeOnce = true; 	//Indicates that a transition to a different state has occurred
+    int currentState = -1;	//Indicates the current state number
 };
 
-StateMachine::StateMachine() { this->stateList = new LinkedList<State*>(); };
+StateMachine::StateMachine(){
+  stateList = new LinkedList<State*>();
+};
 
 StateMachine::~StateMachine(){};
 
 /*
  * Main execution of the machine occurs here in run
  * The current state is executed and it's transitions are evaluated
- * to determine the next state.
- *
+ * to determine the next state. 
+ * 
  * By design, only one state is executed in one loop() cycle.
  */
-void StateMachine::run() {
-  // Serial.println("StateMachine::run()");
+void StateMachine::run(){
+  //Serial.println("StateMachine::run()");
   // Early exit, no states are defined
-  if (this->stateList->size() == 0) return;
+  if(stateList->size() == 0) return;
 
   // Initial condition
-  if (this->currentState == -1) {
-    this->currentState = 0;
+  if(currentState == -1){
+    currentState = 0;
   }
-
+  
   // Execute state logic and return transitioned
-  // to state number.
-  int next = stateList->get(this->currentState)->execute();
-  if (this->transition == false) {
-    this->executeOnce = (this->currentState == next) ? false : true;
-    this->currentState = next;
-  } else {
-    this->transition = false;
-  }
+  // to state number. 
+  int next = stateList->get(currentState)->execute();
+  executeOnce = (currentState == next)?false:true;
+  currentState = next;
 }
 
 /*
  * Adds a state to the machine
  * It adds the state in sequential order.
  */
-State* StateMachine::addState(void (*functionPointer)()) {
+State* StateMachine::addState(void(*functionPointer)()){
   State* s = new State();
   s->stateLogic = functionPointer;
-  this->stateList->add(s);
-  s->index = stateList->size() - 1;
+  stateList->add(s);
+  s->index = stateList->size()-1;
   return s;
 }
 
@@ -75,10 +72,9 @@ State* StateMachine::addState(void (*functionPointer)()) {
  * Jump to a state
  * given by a pointer to that state.
  */
-State* StateMachine::transitionTo(State* s) {
+State* StateMachine::transitionTo(State* s){
   this->currentState = s->index;
   this->executeOnce = true;
-  this->transition = true;
   return s;
 }
 
@@ -86,11 +82,11 @@ State* StateMachine::transitionTo(State* s) {
  * Jump to a state
  * given by a state index number.
  */
-int StateMachine::transitionTo(int i) {
-  if (i < stateList->size()) {
-    this->currentState = i;
-    this->executeOnce = true;
-    return i;
+int StateMachine::transitionTo(int i){
+  if(i < stateList->size()){
+	this->currentState = i;
+	this->executeOnce = true;
+	return i;
   }
   return currentState;
 }
