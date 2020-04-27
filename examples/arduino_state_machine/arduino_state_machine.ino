@@ -107,9 +107,7 @@ void setup() {
   * Functions must be defined in the sketch
   */
   S1->addTransition(&transitionS1S2,S2);
-  S2->addTransition(&transitionS2S3,S3);
   S3->addTransition(&transitionS3S4,S4);
-  S4->addTransition(&transitionS4S5,S5);
   S5->addTransition(&transitionS5S0,S0);
   S5->addTransition(&transitionS5S2,S2);
 }
@@ -132,12 +130,10 @@ bool transitionS1S2(){
 
 //-------------------------
 void state2(){
-  Serial.println("State 2");
+  Serial.println("State 2 use transitionTo for state change to State 3");
+  machine.transitionTo(S3);
 }
 
-bool transitionS2S3(){
-  return true;
-}
 
 //------------------------
 void state3(){
@@ -150,12 +146,10 @@ bool transitionS3S4(){
 
 //-------------------------
 void state4(){
-  Serial.println("State 4");
+  Serial.println("State 4 use TransitionTo for state change to State 5");
+  machine.transitionTo(4);
 }
 
-bool transitionS4S5(){
-  return true;
-}
 
 //-------------------------
 void state5(){
