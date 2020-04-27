@@ -24,6 +24,7 @@ class StateMachine
     LinkedList<State*> *stateList;
 	bool executeOnce = true; 	//Indicates that a transition to a different state has occurred
     int currentState = -1;	//Indicates the current state number
+    bool transition = false;
 };
 
 StateMachine::StateMachine(){
@@ -42,18 +43,22 @@ StateMachine::~StateMachine(){};
 void StateMachine::run(){
   //Serial.println("StateMachine::run()");
   // Early exit, no states are defined
-  if(stateList->size() == 0) return;
+  if(this->stateList->size() == 0) return;
 
   // Initial condition
-  if(currentState == -1){
-    currentState = 0;
+  if(this->currentState == -1){
+    this->currentState = 0;
   }
   
   // Execute state logic and return transitioned
   // to state number. 
-  int next = stateList->get(currentState)->execute();
-  executeOnce = (currentState == next)?false:true;
-  currentState = next;
+  int next = this->stateList->get(currentState)->execute();
+  if (this->transition == false){
+    this->executeOnce = (this->currentState == next)?false:true;
+    this->currentState = next;
+  } else {
+    this->transition = false;
+  }
 }
 
 /*
@@ -63,8 +68,8 @@ void StateMachine::run(){
 State* StateMachine::addState(void(*functionPointer)()){
   State* s = new State();
   s->stateLogic = functionPointer;
-  stateList->add(s);
-  s->index = stateList->size()-1;
+  this->stateList->add(s);
+  s->index = this->stateList->size()-1;
   return s;
 }
 
@@ -75,6 +80,7 @@ State* StateMachine::addState(void(*functionPointer)()){
 State* StateMachine::transitionTo(State* s){
   this->currentState = s->index;
   this->executeOnce = true;
+  this->transition = true;
   return s;
 }
 
@@ -83,9 +89,10 @@ State* StateMachine::transitionTo(State* s){
  * given by a state index number.
  */
 int StateMachine::transitionTo(int i){
-  if(i < stateList->size()){
+  if(i < this->stateList->size()){
 	this->currentState = i;
 	this->executeOnce = true;
+	this->transition = true;
 	return i;
   }
   return currentState;
