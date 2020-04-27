@@ -147,7 +147,7 @@ bool transitionS3S4(){
 //-------------------------
 void state4(){
   Serial.println("State 4 use TransitionTo for state change to State 5");
-  machine.transitionTo(4);
+  machine.transitionTo(5);
 }
 
 
